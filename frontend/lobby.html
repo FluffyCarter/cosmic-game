@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Космическое господство — лобби</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Лобби 🛰</h1>
+
+    <!-- Блок игрока -->
+    <div id="player-view" class="card hidden">
+      <h2>Ты в игре</h2>
+      <p>Планета: <strong id="player-planet">—</strong></p>
+      <p id="player-status">Ожидаем старта игры…</p>
+      <div class="row">
+        <button id="btn-go-game" class="btn btn-primary hidden">Перейти в игру</button>
+        <button id="btn-leave-player" class="btn btn-ghost">Выйти из сохранённой сессии</button>
+      </div>
+    </div>
+
+    <!-- Блок админа -->
+    <div id="admin-view" class="card hidden">
+      <h2>Панель админа</h2>
+      <p>Код комнаты: <span id="join-code" class="code">—</span>
+        <button id="btn-copy-code" class="btn btn-small">Копировать</button>
+      </p>
+      <p>Раундов: <span id="rounds-total">—</span></p>
+      <p>Статус: <span id="session-status">—</span></p>
+      <p>Аномалия: <span id="session-anomaly">—</span>%</p>
+      <h3>Игроки (<span id="players-count">0</span>):</h3>
+      <ul id="players-list" class="players"></ul>
+      <div class="row">
+        <button id="btn-start" class="btn btn-primary">▶️ Начать игру</button>
+        <button id="btn-admin-page" class="btn btn-secondary hidden">Панель админа</button>
+        <button id="btn-leave-admin" class="btn btn-ghost">Выйти</button>
+      </div>
+      <p id="admin-error" class="error"></p>
+    </div>
+
+    <p id="global-error" class="error"></p>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/lobby.js"></script>
+</body>
+</html>

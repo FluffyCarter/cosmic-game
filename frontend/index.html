@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Космическое господство — вход</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Космическое господство 🚀</h1>
+
+    <div class="card-grid">
+      <!-- ИГРОК -->
+      <div class="card">
+        <h2>Присоединиться к игре</h2>
+        <label>Код комнаты
+          <input id="join-code" type="text" placeholder="123456" maxlength="6" inputmode="numeric" />
+        </label>
+        <label>Твоё имя / планета
+          <input id="join-name" type="text" placeholder="Например, Энакин" maxlength="64" />
+        </label>
+        <button id="btn-join" class="btn btn-primary">Войти</button>
+        <p id="join-error" class="error"></p>
+      </div>
+
+      <!-- АДМИН -->
+      <div class="card">
+        <h2>Создать комнату</h2>
+        <label>Количество раундов
+          <select id="rounds-total">
+            <option value="6" selected>6 (по умолчанию)</option>
+            <option value="5">5</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+          </select>
+        </label>
+        <button id="btn-create" class="btn btn-secondary">Создать</button>
+        <p id="create-error" class="error"></p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <a href="admin.html">У меня уже есть админ-токен</a>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

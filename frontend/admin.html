@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Космическое господство — админ</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Админ-панель 🛠</h1>
+
+    <header class="game-header">
+      <div>
+        <span class="label">Комната:</span>
+        <strong id="session-id">—</strong>
+      </div>
+      <div>
+        <span class="label">Код:</span>
+        <strong id="join-code" class="code">—</strong>
+      </div>
+      <div>
+        <span class="label">Раунд:</span>
+        <strong id="round-info">—</strong>
+      </div>
+      <div>
+        <span class="label">Аномалия:</span>
+        <strong id="anomaly">—</strong>%
+      </div>
+      <div>
+        <span class="label">Готовы:</span>
+        <strong id="ready-count">0 / 0</strong>
+      </div>
+      <div>
+        <span class="label">Статус:</span>
+        <strong id="session-status">—</strong>
+      </div>
+    </header>
+
+    <div id="deadline-bar" class="deadline hidden">
+      До конца раунда: <span id="timer">—</span>
+    </div>
+
+    <div class="card">
+      <h2>Управление раундом</h2>
+      <div class="row">
+        <button id="btn-end-round" class="btn btn-secondary">⏩ Завершить раунд</button>
+        <button id="btn-next-round" class="btn btn-primary hidden">▶️ Начать следующий раунд</button>
+        <button id="btn-pause" class="btn btn-ghost">⏸ Пауза</button>
+        <button id="btn-resume" class="btn btn-ghost hidden">▶️ Продолжить</button>
+        <button id="btn-refresh" class="btn btn-ghost">🔄 Обновить</button>
+      </div>
+      <p id="admin-error" class="error"></p>
+    </div>
+
+    <div class="card">
+      <h2>Игроки</h2>
+      <div id="players-list" class="players-table"></div>
+    </div>
+
+    <div class="card">
+      <h2>📞 Запросы на переговоры</h2>
+      <p class="muted">Здесь появляются запросы, которые игроки отправляют друг другу. Сопроводи дипломата лично.</p>
+      <div id="talk-events" class="events"></div>
+    </div>
+
+    <div class="card" id="summary-card" style="display:none;">
+      <h2>📊 Сводка раунда</h2>
+      <div class="row">
+        <a id="btn-open-html" class="btn btn-primary" target="_blank">🔗 Открыть HTML</a>
+        <a id="btn-download-html" class="btn btn-secondary" download>⬇️ Скачать HTML</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Последняя сводка (текст)</h2>
+      <p class="muted">Обновляется в конце каждого раунда.</p>
+      <div id="summary-text" class="summary"></div>
+    </div>
+
+    <div class="card" id="winner-card" style="display:none;">
+      <h2>🏆 Результат игры</h2>
+      <p id="winner-text"></p>
+    </div>
+
+    <div class="card">
+      <button id="btn-to-lobby" class="btn btn-ghost">← В лобби</button>
+      <button id="btn-exit" class="btn btn-ghost">Выйти из админ-сессии</button>
+    </div>
+
+    <p id="global-error" class="error"></p>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

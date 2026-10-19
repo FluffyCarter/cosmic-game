@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Космическое господство — игра</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Верхняя панель -->
+    <header class="game-header">
+      <div>
+        <span class="label">Планета:</span>
+        <strong id="planet-name">—</strong>
+      </div>
+      <div>
+        <span class="label">Раунд:</span>
+        <strong id="round-info">—</strong>
+      </div>
+      <div>
+        <span class="label">Аномалия:</span>
+        <strong id="anomaly">—</strong>%
+      </div>
+      <div>
+        <span class="label">Деньги:</span>
+        <strong id="money">—</strong> 💵
+      </div>
+      <div>
+        <span class="label">Метеориты:</span>
+        <strong id="missiles">0</strong>
+      </div>
+      <div id="sanctions-block" class="hidden">
+        <span class="label">Санкции против тебя:</span>
+        <strong id="sanctions-list" style="color: #ff8888;">—</strong>
+      </div>
+    </header>
+
+    <div id="deadline-bar" class="deadline hidden">
+      До конца раунда: <span id="timer">—</span>
+    </div>
+
+    <div class="card">
+      <h2>🏙 Твои города</h2>
+      <div id="cities" class="cities"></div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Приказ (корзина)</h2>
+      <ul id="orders" class="orders"></ul>
+      <p id="orders-total">Итого: 0 💵</p>
+      <div class="row">
+        <button id="btn-ready" class="btn btn-primary">✅ Отправить приказ</button>
+        <button id="btn-clear" class="btn btn-ghost">🗑 Очистить корзину</button>
+      </div>
+      <p id="ready-status" class="hidden"></p>
+    </div>
+
+    <div class="card">
+      <h2>⚙️ Действия</h2>
+      <div id="actions" class="actions"></div>
+    </div>
+
+    <div class="card">
+      <h2>🌍 Другие планеты</h2>
+      <div id="other-players" class="other-players"></div>
+    </div>
+
+    <div class="card">
+      <h2>💸 Перевод денег</h2>
+      <label>Кому:
+        <select id="pay-target"></select>
+      </label>
+      <label>Сумма:
+        <input id="pay-amount" type="number" min="1" step="1" placeholder="100" />
+      </label>
+      <button id="btn-pay" class="btn btn-secondary">💸 Перевести</button>
+    </div>
+
+    <div class="card">
+      <h2>📞 Переговоры</h2>
+      <p class="muted">Запрос висит 1 минуту. Принимающая планета может принять или отклонить.</p>
+
+      <h3>Входящие</h3>
+      <div id="talk-incoming" class="talk-list"></div>
+
+      <h3>Исходящие</h3>
+      <div id="talk-outgoing" class="talk-list"></div>
+
+      <h3>Отправить запрос</h3>
+      <div id="talk-send" class="talk-list"></div>
+    </div>
+
+    <!-- Модалка для выбора цели (город/планета) -->
+    <div id="modal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="modal-title">—</h3>
+        <div id="modal-body"></div>
+        <button id="modal-close" class="btn btn-ghost">Отмена</button>
+      </div>
+    </div>
+
+    <!-- Экран финала -->
+    <div id="finish-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="finish-title">—</h3>
+        <p id="finish-text"></p>
+        <button id="btn-back-lobby" class="btn btn-primary">В лобби</button>
+      </div>
+    </div>
+
+    <p id="global-error" class="error"></p>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

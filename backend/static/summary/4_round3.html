@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Итоги раунда 3</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        padding: 20px;
+        font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+        background: #f5f5f5;
+        color: #222;
+    }
+    .title { font-size: 42px; margin: 0 0 20px 10px; }
+    .wrapper { display: flex; align-items: flex-start; gap: 30px; flex-wrap: wrap; }
+    .panels { flex: 0 0 700px; }
+    .name { font-size: 28px; margin: 16px 0 4px; }
+    .panel {
+        width: 700px;
+        height: 100px;
+        background: #2f2f2f;
+        border-radius: 20px;
+        overflow: hidden;
+        color: #fff;
+        font-size: 24px;
+    }
+    .upper-half {
+        height: 50%;
+        background: var(--panel-color);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        align-items: center;
+    }
+    .lower-half {
+        height: 50%;
+        background: #2f2f2f;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        align-items: center;
+    }
+    .city, .percentage { text-align: center; padding: 5px; }
+    .percentage.dead { color: #888; }
+    .chart-wrapper { flex: 1; min-width: 400px; }
+    .hist-name { font-size: 32px; margin: 0 0 10px 20px; }
+    .chart {
+        display: flex;
+        height: 600px;
+        background: #f0f0f0;
+        border-radius: 10px;
+        padding: 20px;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .bar {
+        flex: 1;
+        background: #007BFF;
+        border-radius: 5px;
+        position: relative;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        min-height: 40px;
+    }
+    .value, .label { color: #fff; font-weight: bold; margin-bottom: 4px; }
+    .label { font-size: 13px; }
+    .eco { font-size: 32px; margin: 20px 0 0 20px; }
+</style>
+</head>
+<body>
+    <h1 class="title"><strong>Космическое господство 🚀 — раунд 3</strong></h1>
+    <div class="wrapper">
+        <div class="panels">
+            
+            <p class="name"><strong>Татуин</strong></p>
+            <div class="panel" style="--panel-color: green;">
+                <div class="upper-half"><div class="city">Таскен</div><div class="city">Эспа</div><div class="city">Анкор</div><div class="city">Эйсли</div></div>
+                <div class="lower-half"><div class="percentage dead">—</div><div class="percentage">37%</div><div class="percentage dead">—</div><div class="percentage dead">—</div></div>
+            </div>
+        
+            <p class="name"><strong>Мандалор</strong></p>
+            <div class="panel" style="--panel-color: red;">
+                <div class="upper-half"><div class="city">Санари</div><div class="city">Киримо</div><div class="city">Кедабе</div><div class="city">Энцери</div></div>
+                <div class="lower-half"><div class="percentage">17%</div><div class="percentage">0%</div><div class="percentage">0%</div><div class="percentage">0%</div></div>
+            </div>
+        
+            <p class="name"><strong>Джакку</strong></p>
+            <div class="panel" style="--panel-color: blue;">
+                <div class="upper-half"><div class="city">Ниима</div><div class="city">Шир</div><div class="city">Айрон</div><div class="city">Туанул</div></div>
+                <div class="lower-half"><div class="percentage">17%</div><div class="percentage">0%</div><div class="percentage">17%</div><div class="percentage">17%</div></div>
+            </div>
+        
+            <p class="name"><strong>Корусант</strong></p>
+            <div class="panel" style="--panel-color: orange;">
+                <div class="upper-half"><div class="city">Талус</div><div class="city">Эгела</div><div class="city">Кору</div><div class="city">Селония</div></div>
+                <div class="lower-half"><div class="percentage">17%</div><div class="percentage">17%</div><div class="percentage">0%</div><div class="percentage">17%</div></div>
+            </div>
+        
+            <p class="name"><strong>Альдераан</strong></p>
+            <div class="panel" style="--panel-color: purple;">
+                <div class="upper-half"><div class="city">Кревасс</div><div class="city">Альдера</div><div class="city">Олденфорт</div><div class="city">Белоа</div></div>
+                <div class="lower-half"><div class="percentage">17%</div><div class="percentage">0%</div><div class="percentage">17%</div><div class="percentage">17%</div></div>
+            </div>
+        
+            <p class="name"><strong>Мустафар</strong></p>
+            <div class="panel" style="--panel-color: yellowgreen;">
+                <div class="upper-half"><div class="city">Фралидеджа</div><div class="city">Джестефад</div><div class="city">Игнис</div><div class="city">Лефрани</div></div>
+                <div class="lower-half"><div class="percentage dead">—</div><div class="percentage">0%</div><div class="percentage">17%</div><div class="percentage">0%</div></div>
+            </div>
+        
+        </div>
+        <div class="chart-wrapper">
+            <div class="hist-name">Уровень жизни на планетах</div>
+            <div class="chart">
+                
+            <div class="bar" style="height: 72.54901960784314%;">
+                <span class="value">9%</span>
+                <span class="label">Татуин</span>
+            </div>
+        
+            <div class="bar" style="height: 33.33333333333333%;">
+                <span class="value">4%</span>
+                <span class="label">Мандалор</span>
+            </div>
+        
+            <div class="bar" style="height: 100.0%;">
+                <span class="value">13%</span>
+                <span class="label">Джакку</span>
+            </div>
+        
+            <div class="bar" style="height: 100.0%;">
+                <span class="value">13%</span>
+                <span class="label">Корусант</span>
+            </div>
+        
+            <div class="bar" style="height: 100.0%;">
+                <span class="value">13%</span>
+                <span class="label">Альдераан</span>
+            </div>
+        
+            <div class="bar" style="height: 33.33333333333333%;">
+                <span class="value">4%</span>
+                <span class="label">Мустафар</span>
+            </div>
+        
+            </div>
+            <div class="eco">Уровень аномалии 🌌: 63%</div>
+        </div>
+    </div>
+</body>
+</html>
