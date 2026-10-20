@@ -354,6 +354,45 @@ def get_summary_html(session_id: int, round_num: int):
 
 
 # ===========================================================================
+#  ОЧИСТКА БД (только для супер-админа)
+# ===========================================================================
+
+import os
+from fastapi.security import HTTPAuthorizationCredentials
+from app.auth import _bearer
+from app.config import SECRET_KEY
+
+
+@app.post("/api/admin/reset-db")
+def admin_reset_db(
+    confirm: str,
+    creds: HTTPAuthorizationCredentials | None = Depends(_bearer),
+):
+    """
+    Удаляет все игровые данные. Требует:
+    - confirm=yes-i-want-to-wipe-everything
+    - Bearer <SECRET_KEY> в заголовке Authorization
+    """
+    if confirm != "yes-i-want-to-wipe-everything":
+        raise HTTPException(400, "Передай confirm=yes-i-want-to-wipe-everything")
+
+    if not creds or creds.credentials != SECRET_KEY:
+        raise HTTPException(403, "Только супер-админ")
+
+    with db.db_session() as conn:
+        conn.execute("DELETE FROM orders")
+        conn.execute("DELETE FROM cities")
+        conn.execute("DELETE FROM talk_requests")
+        conn.execute("DELETE FROM players")
+        conn.execute("DELETE FROM sessions")
+
+    return {
+        "ok": True,
+        "message": "БД очищена. Все сессии, игроки, приказы удалены.",
+    }
+
+
+# ===========================================================================
 #  WEBSOCKET
 # ===========================================================================
 
