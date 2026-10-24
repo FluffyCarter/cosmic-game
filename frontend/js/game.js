@@ -43,6 +43,38 @@
 
   const globalError = document.getElementById("global-error");
 
+  // --- Toast-уведомления ---
+  const toastContainer = document.getElementById("toast-container");
+
+  function showToast(message, type = "error", duration = 5000) {
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+
+    const text = document.createElement("span");
+    text.textContent = message;
+    toast.appendChild(text);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "toast-close";
+    closeBtn.textContent = "×";
+    closeBtn.onclick = () => removeToast(toast);
+    toast.appendChild(closeBtn);
+
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => removeToast(toast), duration);
+  }
+
+  function removeToast(toast) {
+    if (!toast || !toast.parentNode) return;
+    toast.classList.add("toast-closing");
+    setTimeout(() => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 300);
+  }
+
   // --- State ---
   let state = null;
   let deadlineTimer = null;
@@ -158,19 +190,17 @@
       otherPlayersEl.appendChild(div);
     });
 
-    payTargetEl.innerHTML = "";
-    other_players.forEach(p => {
-      if (!p.is_alive) return;
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      opt.textContent = p.planet;
-      payTargetEl.appendChild(opt);
-    });
+    renderPayTarget(other_players);
 
-    renderTalks();
+    // Показываем карточку сводки, если раунд завершён
+    const summaryCard = document.getElementById("summary-card");
+    const btnOpenSummary = document.getElementById("btn-open-summary");
 
     if (session.status === "discussion" && session.last_summary) {
-      openSummaryTab(session.last_summary);
+      summaryCard.classList.remove("hidden");
+      btnOpenSummary.href = window.API_URL + session.last_summary.html_url;
+    } else {
+      summaryCard.classList.add("hidden");
     }
 
     if (session.status === "finished") {
@@ -178,16 +208,6 @@
     }
   }
 
-  // --- Сводка ---
-  let summaryOpenedForRound = null;
-
-  function openSummaryTab(lastSummary) {
-    const r = lastSummary.round;
-    if (summaryOpenedForRound === r) return;
-    summaryOpenedForRound = r;
-    const url = window.API_URL + lastSummary.html_url;
-    window.open(url, "_blank");
-  }
   // --- Описание заказа ---
   function describeOrder(o, st) {
     const n = o.target_name || "?";
@@ -246,6 +266,28 @@
     actionsEl.appendChild(btn);
   }
 
+  function renderPayTarget(otherPlayers) {
+    const currentValue = payTargetEl.value;
+    const available = otherPlayers.filter(p => p.is_alive);
+
+    const currentIds = Array.from(payTargetEl.options).map(o => o.value).join(",");
+    const newIds = available.map(p => String(p.id)).join(",");
+
+    if (currentIds !== newIds) {
+      payTargetEl.innerHTML = "";
+      available.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.planet;
+        payTargetEl.appendChild(opt);
+      });
+    }
+
+    if (currentValue && Array.from(payTargetEl.options).some(o => o.value === currentValue)) {
+      payTargetEl.value = currentValue;
+    }
+  }
+
   // --- Модалка ---
   function openModal(title, bodyBuilder) {
     modalTitle.textContent = title;
@@ -262,6 +304,10 @@
     const cities = state.cities.filter(c => !c.is_destroyed);
     if (action === "shield") {
       const filtered = cities.filter(c => !c.has_shield);
+      if (filtered.length === 0) {
+        showToast("🛡 У всех городов уже есть щит", "error");
+        return;
+      }
       openModal("Выбери город для щита", body => {
         filtered.forEach(c => {
           const b = document.createElement("button");
@@ -272,6 +318,10 @@
         });
       });
     } else {
+      if (cities.length === 0) {
+        showToast("🏙 Нет живых городов", "error");
+        return;
+      }
       openModal("Выбери город", body => {
         cities.forEach(c => {
           const b = document.createElement("button");
@@ -287,7 +337,7 @@
   function chooseTargetPlanet(action) {
     const others = state.other_players.filter(p => p.is_alive);
     if (others.length === 0) {
-      error("Нет живых планет для атаки.");
+      showToast("🌍 Нет живых планет для атаки", "error");
       return;
     }
     openModal("Выбери планету", body => {
@@ -312,10 +362,13 @@
     API.publicState(state.session.id, token)
       .then(pub => {
         const target = pub.players.find(p => p.id === targetPlayerId);
-        if (!target) { error("Планета не найдена."); return; }
+        if (!target) {
+          showToast("Планета не найдена", "error");
+          return;
+        }
         const alive = target.cities.filter(c => !c.is_destroyed);
         if (alive.length === 0) {
-          error(`У планеты ${target.planet} не осталось живых городов.`);
+          showToast(`У планеты ${target.planet} не осталось живых городов`, "error");
           return;
         }
         openModal(`Города планеты ${target.planet}`, body => {
@@ -328,7 +381,7 @@
           });
         });
       })
-      .catch(e => error("Не удалось загрузить города: " + e.message));
+      .catch(e => showToast("Не удалось загрузить города: " + e.message, "error"));
   }
 
   // --- Переговоры ---
@@ -424,28 +477,40 @@
     try {
       await API.request("/api/talk", { method: "POST", token, body: { to_player_id: toId } });
       await refresh();
-    } catch (e) { error(e.message); }
+      showToast("📞 Запрос на переговоры отправлен", "success", 3000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   }
 
   async function acceptTalk(requestId) {
     try {
       await API.request(`/api/talk/${requestId}/accept`, { method: "POST", token });
       await refresh();
-    } catch (e) { error(e.message); }
+      showToast("✅ Переговоры приняты", "success", 3000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   }
 
   async function rejectTalk(requestId) {
     try {
       await API.request(`/api/talk/${requestId}/reject`, { method: "POST", token });
       await refresh();
-    } catch (e) { error(e.message); }
+      showToast("❌ Переговоры отклонены", "error", 3000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   }
 
   async function finishTalk(requestId) {
     try {
       await API.request(`/api/talk/${requestId}/finish`, { method: "POST", token });
       await refresh();
-    } catch (e) { error(e.message); }
+      showToast("🏁 Переговоры завершены", "success", 3000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   }
 
   // --- API ---
@@ -461,7 +526,7 @@
         window.location.href = "index.html";
         return;
       }
-      error(e.message);
+      showToast(e.message, "error");
     }
   }
 
@@ -473,41 +538,59 @@
       state = res.state;
       render();
       error("");
-    } catch (e) { error(e.message); }
+      showToast("✅ Приказ добавлен", "success", 3000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   }
 
   async function removeOrder(orderId) {
     try {
       await API.request(`/api/order/${orderId}`, { method: "DELETE", token });
       await refresh();
-    } catch (e) { error(e.message); }
+      showToast("🗑 Приказ отменён", "success", 3000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   }
 
   btnClear.onclick = async () => {
     try {
       await API.request("/api/order", { method: "DELETE", token });
       await refresh();
-    } catch (e) { error(e.message); }
+      showToast("🗑 Корзина очищена", "success", 3000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   };
 
   btnReady.onclick = async () => {
     try {
       await API.request("/api/ready", { method: "POST", token });
       await refresh();
-    } catch (e) { error(e.message); }
+      showToast("✅ Приказ отправлен. Ждём остальных.", "success", 4000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   };
 
   btnPay.onclick = async () => {
     const to = parseInt(payTargetEl.value, 10);
     const amount = parseInt(payAmountEl.value, 10);
-    if (!to || !amount || amount <= 0) return error("Укажи планету и сумму");
+    if (!to || !amount || amount <= 0) {
+      showToast("Укажи планету и сумму", "error");
+      return;
+    }
     try {
       await API.request("/api/pay", {
         method: "POST", token, body: { to_player_id: to, amount },
       });
       payAmountEl.value = "";
       await refresh();
-    } catch (e) { error(e.message); }
+      showToast(`💸 Переведено ${amount} 💵`, "success", 3000);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
   };
 
   // --- Финал ---
@@ -538,9 +621,6 @@
              "talk_requested", "talk_accepted", "talk_rejected",
              "talk_arrived", "talk_finished", "round_started"].includes(msg.type)) {
           refresh();
-        }
-        if (msg.type === "round_started") {
-          summaryOpenedForRound = null;
         }
       } catch (e) {}
     };

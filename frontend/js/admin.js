@@ -291,31 +291,46 @@
   };
 
   // --- Переговоры ---
-  function addTalkEvent(text) {
-    const div = document.createElement("div");
-    div.className = "event";
-    div.textContent = text;
-    talkEventsEl.prepend(div);
-    while (talkEventsEl.children.length > 30) {
-      talkEventsEl.removeChild(talkEventsEl.lastChild);
-    }
-  }
 
-  function addArriveButton(t) {
-    if (document.getElementById("arrive-" + t.request_id)) return;
+  // Уведомление №1: Дипломата планеты X сопроводить до планеты Y (с кнопкой "Дипломат прибыл")
+  function addArriveNotification(requestId, fromPlanet, toPlanet) {
+    // Не дублируем, если уже есть
+    if (document.getElementById("arrive-" + requestId)) return;
+
     const div = document.createElement("div");
     div.className = "event";
-    div.id = "arrive-" + t.request_id;
-    div.innerHTML = `🚶 ${t.admin_hint} <button class="btn btn-small btn-primary">Дипломат прибыл</button>`;
+    div.id = "arrive-" + requestId;
+    div.innerHTML = `
+      🚶 Дипломата планеты <span class="planet-red">${fromPlanet}</span>
+      сопроводить до планеты <span class="planet-red">${toPlanet}</span>
+      <button class="btn btn-small btn-primary" data-action="arrived">Дипломат прибыл</button>
+    `;
     div.querySelector("button").onclick = async () => {
       try {
-        await API.request(`/api/talk/${t.request_id}/arrived`,
+        await API.request(`/api/talk/${requestId}/arrived`,
           { method: "POST", token: adminToken });
-        div.remove();
+        // ⚠️ Уведомление НЕ удаляем, только убираем кнопку, чтобы не нажимали дважды
+        const btn = div.querySelector("button");
+        if (btn) btn.remove();
       } catch (e) {
         alert(e.message);
       }
     };
+    talkEventsEl.prepend(div);
+  }
+
+  // Уведомление №2: Вернуть дипломата из планеты Y на планету X (без кнопки)
+  function addReturnNotification(requestId, fromPlanet, toPlanet) {
+    // Не дублируем, если уже есть
+    if (document.getElementById("return-" + requestId)) return;
+
+    const div = document.createElement("div");
+    div.className = "event";
+    div.id = "return-" + requestId;
+    div.innerHTML = `
+      🏁 Дипломата из планеты <span class="planet-green">${toPlanet}</span>
+      вернуть на планету <span class="planet-green">${fromPlanet}</span>
+    `;
     talkEventsEl.prepend(div);
   }
 
@@ -328,24 +343,23 @@
     ws.onmessage = (ev) => {
       try {
         const msg = JSON.parse(ev.data);
-        if (msg.type === "talk_requested" && msg.data) {
-          addTalkEvent(`📨 ${msg.data.from_planet} отправил запрос на переговоры к ${msg.data.to_planet}`);
-        }
+
+        // Уведомление №1: дипломат принят (нужно сопроводить)
         if (msg.type === "talk_accepted" && msg.data) {
-          addArriveButton(msg.data);
+          const { request_id, from_planet, to_planet } = msg.data;
+          addArriveNotification(request_id, from_planet, to_planet);
         }
-        if (msg.type === "talk_rejected") {
-          addTalkEvent("❌ Запрос на переговоры отклонён.");
-        }
-        if (msg.type === "talk_arrived" && msg.data) {
-          addTalkEvent(`🤝 Переговоры начались (request #${msg.data.request_id}).`);
-        }
+
+        // Уведомление №2: переговоры завершены (нужно вернуть дипломата)
         if (msg.type === "talk_finished" && msg.data) {
-          addTalkEvent(`🏁 ${msg.data.admin_hint}`);
+          const { request_id, from_planet, to_planet } = msg.data;
+          addReturnNotification(request_id, from_planet, to_planet);
         }
+
+        // Остальные события — просто обновляем страницу
         if (["player_ready", "round_finished", "game_started",
              "round_paused", "round_resumed", "player_joined",
-             "round_started"].includes(msg.type)) {
+             "round_started", "talk_arrived"].includes(msg.type)) {
           refresh();
         }
       } catch (e) {}
