@@ -299,8 +299,16 @@ def talk_accept(request_id: int, player: dict = Depends(get_player_from_header))
         r = game.respond_talk(player["id"], request_id, accept=True)
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+    # Получаем данные о планетах для уведомления админа
+    req = db.get_talk_request(request_id)
+    from_player = db.get_player(req["from_player_id"])
+    to_player = db.get_player(req["to_player_id"])
+
     ws.notify_sync(player["session_id"], "talk_accepted", {
         "request_id": request_id,
+        "from_planet": from_player["planet"],
+        "to_planet": to_player["planet"],
         "admin_hint": r["admin_hint"],
     })
     return r
@@ -333,8 +341,16 @@ def talk_finish(request_id: int, player: dict = Depends(get_player_from_header))
         r = game.finish_talk(player["id"], request_id)
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+    # Получаем данные о планетах для уведомления админа
+    req = db.get_talk_request(request_id)
+    from_player = db.get_player(req["from_player_id"])
+    to_player = db.get_player(req["to_player_id"])
+
     ws.notify_sync(player["session_id"], "talk_finished", {
         "request_id": request_id,
+        "from_planet": from_player["planet"],
+        "to_planet": to_player["planet"],
         "admin_hint": r["admin_hint"],
     })
     return r

@@ -396,9 +396,12 @@ def set_ready(player_id: int) -> dict:
         raise ValueError("Корзина пуста")
     with db.db_session() as conn:
         conn.execute("UPDATE players SET order_ready = 1 WHERE id = ?", (player_id,))
-    players = db.get_players(s["id"])
-    if all(p["order_ready"] for p in players):
-        _finish_round(s["id"])
+    
+    # ✅ Убираем автозавершение раунда — раунд завершается только по таймеру или вручную админом
+    # players = db.get_players(s["id"])
+    # if all(p["order_ready"] for p in players):
+    #     _finish_round(s["id"])
+    
     return {"ok": True}
 
 

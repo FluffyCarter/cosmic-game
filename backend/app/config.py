@@ -10,7 +10,7 @@ CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-change-me")
 
 # --- Игра ---
-MAX_SESSIONS = 4
+MAX_SESSIONS = 10
 MAX_PLAYERS = 10
 MIN_PLAYERS = 1
 
